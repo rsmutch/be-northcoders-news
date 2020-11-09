@@ -7,4 +7,5 @@ const {
 
 exports.seed = function (knex) {
   // add seeding functionality here
+
 };

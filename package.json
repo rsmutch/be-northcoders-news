@@ -6,7 +6,13 @@
   "scripts": {
     "setup-dbs": "psql -f ./db/setup.sql",
     "seed": "knex seed:run",
-    "test": "jest"
+    "test": "jest",
+    "test-migrate-make": "NODE_ENV=test knex migrate:make",
+    "test-migrate-latest": "NODE_ENV=test knex migrate:latest",
+    "test-migrate-rollback": "NODE_ENV=test knex migrate:rollback",
+    "migrate-make": "knex migrate:make",
+    "migrate-latest": "knex migrate:latest",
+    "migrate-rollback": "knex migrate:rollback"
   },
   "repository": {
     "type": "git",
@@ -19,6 +25,9 @@
     "url": "https://github.com/northcoders/be-nc-news/issues"
   },
   "homepage": "https://github.com/northcoders/be-nc-news#readme",
-  "dependencies": {},
+  "dependencies": {
+    "knex": "^0.21.12",
+    "pg": "^8.4.2"
+  },
   "devDependencies": {}
 }
