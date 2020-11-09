@@ -1,14 +1,13 @@
 const dateFormatter = (array) => {
   const newArray = [];
-  array.forEach(({ created_at, ...args }) => {
+  array.forEach((object) => {
     const newObject = {
-      ...args,
-      created_at,
+      ...object
     };
 
     const milliseconds = newObject.created_at;
     const dateObject = new Date(milliseconds);
-    newObject.created_at = dateObject.toLocaleString();
+    newObject.created_at = dateObject;
 
     newArray.push(newObject);
   });
@@ -16,4 +15,29 @@ const dateFormatter = (array) => {
   return newArray;
 };
 
-module.exports = { dateFormatter };
+
+// const createArticlesRef = articleRows => {
+//   const ref = {};
+//   articleRows.forEach(article => {
+//     ref[article.title] = article[article_id]
+//   });
+//   return ref;
+// }
+
+
+
+// const commentFormatter = array => {
+//   const ref = {};
+
+//   array.forEach(comments => {
+//     ref.author = comments[created_by];
+//     ref[article_id] = 0;
+//     ref.votes = comments.votes
+//     ref[created_at] = comments[created_at];
+//     ref.body = comments.body;
+//   })
+
+//   return ref;
+// }
+
+module.exports = { dateFormatter, commentFormatter };

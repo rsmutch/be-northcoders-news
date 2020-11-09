@@ -4,7 +4,7 @@ const {
   commentData,
   userData,
 } = require('../data/index.js');
-const { dateFormatter } = require('../utils/data-manipulation');
+const { dateFormatter, commentFormatter } = require('../utils/data-manipulation');
 
 exports.seed = (connection) => {
   return connection.migrate
@@ -33,5 +33,11 @@ exports.seed = (connection) => {
     })
     .then((articleRows) => {
       console.log(`inserted ${articleRows.length} articles`);
-    });
+    })
+    .then(() => {
+      const formattedDate = dateFormatter(commentData);
+      const formattedComments = commentFormatter(formattedDate);
+
+    })
+
 };
