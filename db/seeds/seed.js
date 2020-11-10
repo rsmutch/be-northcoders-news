@@ -4,7 +4,11 @@ const {
   commentData,
   userData,
 } = require('../data/index.js');
-const { dateFormatter, commentFormatter } = require('../utils/data-manipulation');
+const {
+  dateFormatter,
+  commentFormatter,
+  createArticlesRef,
+} = require('../utils/data-manipulation');
 
 exports.seed = (connection) => {
   return connection.migrate
@@ -33,11 +37,16 @@ exports.seed = (connection) => {
     })
     .then((articleRows) => {
       console.log(`inserted ${articleRows.length} articles`);
-    })
-    .then(() => {
       const formattedDate = dateFormatter(commentData);
-      const formattedComments = commentFormatter(formattedDate);
-
+      const commentRef = createArticlesRef(articleRows);
+      const formattedComments = commentFormatter(formattedDate, commentRef);
+      return connection
+        .insert(formattedComments)
+        .into('comments')
+        .returning('*');
     })
-
+    .then((commentRows) => {
+      console.log(`inserted ${commentRows.length} comments`);
+      console.log('Added all information!');
+    });
 };
