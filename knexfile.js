@@ -14,15 +14,11 @@ const customConfig = {
   development: {
     connection: {
       database: 'nc_news',
-      user: 'rsm',
-      password: 'password789',
     },
   },
   test: {
     connection: {
       database: 'nc_news_test',
-      user: 'rsm',
-      password: 'password789',
     },
   },
 };

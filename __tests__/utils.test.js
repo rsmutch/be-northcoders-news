@@ -71,7 +71,19 @@ describe('dateFormatter', () => {
         votes: 100,
       },
     ];
-    expect(dateFormatter(input)).not.toBe(input);
+    const inputClone = [
+      {
+        title: 'Living in the shadow of a great man',
+        topic: 'mitch',
+        author: 'butter_bridge',
+        body: 'I find this existence challenging',
+        created_at: 1542284514171,
+        votes: 100,
+      },
+    ];
+    dateFormatter(input);
+
+    expect(input).toEqual(inputClone);
   });
 });
 describe('createArticlesRef', () => {
@@ -147,7 +159,19 @@ describe('createArticlesRef', () => {
         created_at: Date.now(),
       },
     ];
-    expect(createArticlesRef(input)).not.toEqual(input);
+    const inputClone = [
+      {
+        article_id: 1,
+        title: 'Living in the shadow of a great man',
+        body: 'I find this existence challenging',
+        votes: 100,
+        topic: 'mitch',
+        author: 'butter_bridge',
+        created_at: Date.now(),
+      },
+    ];
+    createArticlesRef(input);
+    expect(input).toEqual(inputClone);
   });
 });
 describe('commentFormatter', () => {
@@ -240,6 +264,21 @@ describe('commentFormatter', () => {
     const inputRefObj = {
       'Living in the shadow of a great man': 1,
     };
-    expect(commentFormatter(input, inputRefObj)).not.toEqual(input);
+    const inputClone = [
+      {
+        body:
+          "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        belongs_to: 'Living in the shadow of a great man',
+        created_by: 'butter_bridge',
+        votes: 16,
+        created_at: Date.now(),
+      },
+    ];
+    const inputRefObjClone = {
+      'Living in the shadow of a great man': 1,
+    };
+    commentFormatter(input, inputRefObj);
+    expect(input).toEqual(inputClone);
+    expect(inputRefObj).toEqual(inputRefObjClone);
   });
 });
