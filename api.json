@@ -1,0 +1,18 @@
+{
+  "TOPICS": ["GET /api/topics", "POST /api/topics"],
+  "USERS": ["GET /api/users", "POST /api/users", "GET /api/users/:username"],
+  "ARTICLES": [
+    "GET /api/articles",
+    "POST /api/articles",
+    "GET /api/articles/:article_id",
+    "PATCH /api/articles/:article_id",
+    "DELETE /api/articles/:article_id"
+  ],
+  "COMMENTS": [
+    "GET /api/articles/:article_id/comments",
+    "POST /api/articles/:article_id/comments",
+    "PATCH /api/comments/:comment_id",
+    "DELETE /api/comments/:comment_id"
+  ],
+  "API": ["GET /api"]
+}
