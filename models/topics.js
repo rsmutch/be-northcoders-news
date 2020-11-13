@@ -1,13 +1,18 @@
 const connection = require('../db/connection');
 
-const fetchAllTopics = () => {
-    return connection
-        .select('*')
-        .from('topics')
+exports.fetchAllTopics = () => {
+  return connection.select('*').from('topics');
 };
 
-
-
-
-
-module.exports = fetchAllTopics;
+exports.createTopic = (newTopic) => {
+  if (!newTopic.slug) {
+    return Promise.reject({ status: 400, msg: 'Bad Request' });
+  }
+  return connection
+    .insert(newTopic)
+    .into('topics')
+    .returning('*')
+    .then((addedTopic) => {
+      return addedTopic[0];
+    });
+};

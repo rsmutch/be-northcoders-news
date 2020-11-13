@@ -7,7 +7,7 @@ exports.handleCustomErrors = (err, req, res, next) => {
 };
 
 exports.handlePSQLErrors = (err, req, res, next) => {
-  const notFound = ['22P02'];
+  const notFound = ['22P02', '23503'];
   const requiredIsNull = ['23502'];
   if (notFound.includes(err.code)) {
     res.status(404).send({ msg: `${err.detail} not found` });

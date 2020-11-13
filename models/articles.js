@@ -49,8 +49,10 @@ exports.fetchArticles = (articleId, sortBy, order) => {
     .then((articleData) => {
       if (articleData.length === 0) {
         return Promise.reject({ status: 404, msg: 'Article not found' });
+      } else if (articleData.length > 1) {
+        return articleData;
       }
-      return articleData;
+      return articleData[0];
     });
 };
 
@@ -71,7 +73,7 @@ exports.updateArticleVotes = (articleId, updateBody) => {
       if (articleData.length === 0) {
         return Promise.reject({ status: 404, msg: 'Article not found' });
       }
-      return articleData;
+      return articleData[0];
     });
 };
 

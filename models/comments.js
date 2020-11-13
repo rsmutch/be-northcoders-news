@@ -20,7 +20,10 @@ exports.createComment = (articleId, newComment) => {
       body: newComment.body,
     })
     .into('comments')
-    .returning('*');
+    .returning('*')
+    .then((commentData) => {
+      return commentData[0];
+    });
 };
 
 exports.updateCommentVotes = (commentId, updateBody) => {
@@ -40,6 +43,19 @@ exports.updateCommentVotes = (commentId, updateBody) => {
       if (commentData.length === 0) {
         return Promise.reject({ status: 404, msg: 'Comment not found' });
       }
-      return commentData;
+      return commentData[0];
+    });
+};
+
+exports.removeCommentById = (commentId) => {
+  return connection
+    .from('comments')
+    .where('comment_id', commentId)
+    .del()
+    .then((deletedItems) => {
+      if (deletedItems === 0) {
+        return Promise.reject({ status: 404, msg: 'Comment not found' });
+      }
+      return deletedItems;
     });
 };

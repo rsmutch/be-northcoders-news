@@ -21,6 +21,9 @@ describe('Endpoints', () => {
         });
     });
   });
+  describe('/api/', () => {
+    describe('GET', () => {});
+  });
   describe('/api/topics', () => {
     describe('GET', () => {
       test('should respond with status code 200 and an array of all topics', () => {
@@ -49,24 +52,167 @@ describe('Endpoints', () => {
           });
       });
     });
+    describe('POST', () => {
+      it('should respond with 201 and the newly added object', () => {
+        return request(app)
+          .post('/api/topics/')
+          .send({
+            slug: 'New Slug',
+            description: 'New Description',
+          })
+          .expect(201)
+          .then(({ body: { topic } }) => {
+            expect(topic).toEqual({
+              slug: 'New Slug',
+              description: 'New Description',
+            });
+          });
+      });
+      it('should respond with 400 Bad Request if slug is omitted', () => {
+        return request(app)
+          .post('/api/topics/')
+          .send({
+            description: 'New Description',
+          })
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toEqual('Bad Request');
+          });
+      });
+    });
   });
   describe('/api/users', () => {
+    describe('POST', () => {
+      it('should respond with 201 and the newly added object', () => {
+        return request(app)
+          .post('/api/users/')
+          .send({
+            username: 'Newusername',
+            avatar_url: 'www.google.co.uk',
+            name: 'New Name',
+          })
+          .expect(201)
+          .then(({ body: { user } }) => {
+            expect(user).toEqual({
+              username: 'Newusername',
+              avatar_url: 'www.google.co.uk',
+              name: 'New Name',
+            });
+          });
+      });
+      it('should respond with 400 Bad Request if username is omitted', () => {
+        return request(app)
+          .post('/api/users/')
+          .send({
+            avatar_url: 'www.google.co.uk',
+            name: 'New Name',
+          })
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toEqual('Bad Request');
+          });
+      });
+    });
+    describe('GET', () => {
+      it('should respond with 200 and an array of user objects', () => {
+        return request(app)
+          .get('/api/users')
+          .expect(200)
+          .then(({ body: { users } }) => {
+            users.forEach((user) => {
+              expect(user).toMatchObject(
+                expect.objectContaining({
+                  username: expect.any(String),
+                })
+              );
+            });
+          });
+      });
+      it('default sort & order is descending username', () => {
+        return request(app)
+          .get('/api/users/')
+          .expect(200)
+          .then(({ body: { users } }) => {
+            expect(users).toBeSortedBy('username', {
+              descending: true,
+            });
+          });
+      });
+      it('accepts sort_by query', () => {
+        return request(app)
+          .get('/api/users?sort_by=avatar_url')
+          .expect(200)
+          .then(({ body: { users } }) => {
+            expect(users).toBeSortedBy('avatar_url', {
+              descending: true,
+            });
+          })
+          .then(() => {
+            return request(app)
+              .get('/api/users?sort_by=name')
+              .expect(200)
+              .then(({ body: { users } }) => {
+                expect(users).toBeSortedBy('name', {
+                  descending: true,
+                });
+              });
+          });
+      });
+      it('accepts query order', () => {
+        return request(app)
+          .get('/api/users?order=asc')
+          .expect(200)
+          .then(({ body: { users } }) => {
+            expect(users).toBeSortedBy('username', {
+              descending: false,
+            });
+          })
+          .then(() => {
+            return request(app)
+              .get('/api/users?sort_by=name&order=asc')
+              .expect(200)
+              .then(({ body: { users } }) => {
+                expect(users).toBeSortedBy('name', {
+                  descending: false,
+                });
+              });
+          });
+      });
+      it('if sort_by is provided an invalid column, will default to username', () => {
+        return request(app)
+          .get('/api/users?sort_by=fullname')
+          .expect(200)
+          .then(({ body: { users } }) => {
+            expect(users).toBeSortedBy('username', {
+              descending: true,
+            });
+          });
+      });
+      it('if order is provided an invalid order, will default to desc', () => {
+        return request(app)
+          .get('/api/users?order=ascending')
+          .expect(200)
+          .then(({ body: { users } }) => {
+            expect(users).toBeSortedBy('username', {
+              descending: true,
+            });
+          });
+      });
+    });
     describe('/:username', () => {
       describe('GET', () => {
         it('should respond with code 200 and correct user object', () => {
           return request(app)
             .get('/api/users/lurker')
             .expect(200)
-            .then((response) => {
-              expect(response.body).toEqual({
-                user: [
-                  {
-                    username: 'lurker',
-                    avatar_url:
-                      'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
-                    name: 'do_nothing',
-                  },
-                ],
+            .then(({ body }) => {
+              expect(body).toEqual({
+                users: {
+                  username: 'lurker',
+                  avatar_url:
+                    'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
+                  name: 'do_nothing',
+                },
               });
             });
         });
@@ -187,7 +333,7 @@ describe('Endpoints', () => {
             })
             .expect(201)
             .then(({ body: { article } }) => {
-              expect(article[0]).toMatchObject({
+              expect(article).toEqual({
                 article_id: expect.any(Number),
                 author: 'rogersop',
                 title: 'Article Title',
@@ -221,7 +367,7 @@ describe('Endpoints', () => {
             .get('/api/articles/5')
             .expect(200)
             .then((response) => {
-              expect(response.body.articles[0]).toMatchObject({
+              expect(response.body.articles).toEqual({
                 author: expect.any(String),
                 title: expect.any(String),
                 article_id: 5,
@@ -237,7 +383,7 @@ describe('Endpoints', () => {
                 .get('/api/articles/2')
                 .expect(200)
                 .then((response) => {
-                  expect(response.body.articles[0]).toMatchObject({
+                  expect(response.body.articles).toEqual({
                     author: expect.any(String),
                     title: expect.any(String),
                     article_id: expect.any(Number),
@@ -273,8 +419,8 @@ describe('Endpoints', () => {
             .patch('/api/articles/3')
             .send({ inc_votes: 64 })
             .expect(200)
-            .then((response) => {
-              expect(response.body.article[0]).toMatchObject({
+            .then(({ body: { article } }) => {
+              expect(article).toEqual({
                 article_id: 3,
                 title: 'Eight pug gifs that remind me of mitch',
                 body: 'some gifs',
@@ -290,7 +436,7 @@ describe('Endpoints', () => {
                 .send({ inc_votes: -60 })
                 .expect(200)
                 .then((response) => {
-                  expect(response.body.article[0]).toMatchObject({
+                  expect(response.body.article).toEqual({
                     article_id: 3,
                     title: 'Eight pug gifs that remind me of mitch',
                     body: 'some gifs',
@@ -362,8 +508,8 @@ describe('Endpoints', () => {
             .get('/api/articles/3')
             .expect(200)
             .then((response) => {
-              expect(response.body).toMatchObject({
-                articles: expect.any(Array),
+              expect(response.body).toEqual({
+                articles: expect.any(Object),
               });
             })
             .then(() => {
@@ -409,14 +555,14 @@ describe('Endpoints', () => {
                 .expect(200)
                 .then((response) => {
                   expect(response.body.comments.length).toBe(2);
-                  expect(response.body.comments[0]).toMatchObject({
+                  expect(response.body.comments[0]).toEqual({
                     comment_id: 14,
                     votes: expect.any(Number),
                     created_at: expect.any(String),
                     author: expect.any(String),
                     body: expect.any(String),
                   });
-                  expect(response.body.comments[1]).toMatchObject({
+                  expect(response.body.comments[1]).toEqual({
                     comment_id: 15,
                     votes: expect.any(Number),
                     created_at: expect.any(String),
@@ -502,7 +648,7 @@ describe('Endpoints', () => {
                 })
                 .expect(201)
                 .then((response) => {
-                  expect(response.body.comment[0]).toEqual({
+                  expect(response.body.comment).toEqual({
                     article_id: 5,
                     author: 'rogersop',
                     body: 'Beautifully written!',
@@ -512,48 +658,12 @@ describe('Endpoints', () => {
                   });
                 });
             });
-          });
-        });
-        describe('/:comment_id', () => {
-          describe('PATCH', () => {
-            it('should respond with 200 and updated article', () => {
+            it('should respond with 400 Bad Request if an item is omitted', () => {
               return request(app)
-                .patch('/api/comments/3')
-                .send({ inc_votes: 50 })
-                .expect(200)
-                .then(({ body: { comment } }) => {
-                  expect(comment[0]).toEqual({
-                    comment_id: 3,
-                    body: expect.any(String),
-                    votes: 150,
-                    article_id: 1,
-                    author: 'icellusedkars',
-                    created_at: expect.any(String),
-                  });
-                });
-            });
-            it('should respond with status 400 and Bad Request when not passed an object containing inc_votes', () => {
-              return request(app)
-                .patch('/api/comments/3')
-                .send({})
-                .expect(400)
-                .then(({ body: { msg } }) => {
-                  expect(msg).toEqual('Bad Request');
-                });
-            });
-            it('should respond with status 400 and Bad Request when passed containing anything else other than inc_votes', () => {
-              return request(app)
-                .patch('/api/comments/6')
-                .send({ inc_votes: 10, name: 'Dog' })
-                .expect(400)
-                .then(({ body: { msg } }) => {
-                  expect(msg).toEqual('Bad Request');
-                });
-            });
-            it('should respond with status 400 and Bad Request when inc_votes is not numerical', () => {
-              return request(app)
-                .patch('/api/comments/6')
-                .send({ inc_votes: 'two' })
+                .post('/api/articles/5/comments')
+                .send({
+                  username: 'rogersop',
+                })
                 .expect(400)
                 .then(({ body: { msg } }) => {
                   expect(msg).toEqual('Bad Request');
@@ -561,23 +671,128 @@ describe('Endpoints', () => {
             });
             it('should respond with status 404 and article not found if article_id is not found', () => {
               return request(app)
-                .patch('/api/comments/999')
-                .send({ inc_votes: 20 })
+                .post('/api/articles/999/comments')
+                .send({ username: 'rogersop', body: 'Comment Body' })
                 .expect(404)
                 .then(({ body: { msg } }) => {
-                  expect(msg).toBe('Comment not found');
+                  expect(msg).toBe('Article not found');
                 });
             });
-            it('should respond with status 404 and Invalid Article ID when passed a non-numerical ID', () => {
+            it('should respond with status 404 and Invalid Article ID when passed a non-numerical article ID', () => {
               return request(app)
-                .patch('/api/comments/notAnId')
-                .send({ inc_votes: 20 })
+                .post('/api/articles/notAnId/comments')
+                .send({ username: 'rogersop', body: 'Comment Body' })
                 .expect(404)
                 .then(({ body: { msg } }) => {
-                  expect(msg).toEqual('Comment not found');
+                  expect(msg).toEqual('Article not found');
                 });
             });
           });
+        });
+      });
+    });
+  });
+  describe('/api/comments', () => {
+    describe('/:comment_id', () => {
+      describe('PATCH', () => {
+        it('should respond with 200 and updated article', () => {
+          return request(app)
+            .patch('/api/comments/3')
+            .send({ inc_votes: 50 })
+            .expect(200)
+            .then(({ body: { comment } }) => {
+              expect(comment).toEqual({
+                comment_id: 3,
+                body: expect.any(String),
+                votes: 150,
+                article_id: 1,
+                author: 'icellusedkars',
+                created_at: expect.any(String),
+              });
+            });
+        });
+        it('should respond with status 400 and Bad Request when not passed an object containing inc_votes', () => {
+          return request(app)
+            .patch('/api/comments/3')
+            .send({})
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).toEqual('Bad Request');
+            });
+        });
+        it('should respond with status 400 and Bad Request when passed containing anything else other than inc_votes', () => {
+          return request(app)
+            .patch('/api/comments/6')
+            .send({ inc_votes: 10, name: 'Dog' })
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).toEqual('Bad Request');
+            });
+        });
+        it('should respond with status 400 and Bad Request when inc_votes is not numerical', () => {
+          return request(app)
+            .patch('/api/comments/6')
+            .send({ inc_votes: 'two' })
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).toEqual('Bad Request');
+            });
+        });
+        it('should respond with status 404 and article not found if article_id is not found', () => {
+          return request(app)
+            .patch('/api/comments/999')
+            .send({ inc_votes: 20 })
+            .expect(404)
+            .then(({ body: { msg } }) => {
+              expect(msg).toBe('Comment not found');
+            });
+        });
+        it('should respond with status 404 and Invalid Article ID when passed a non-numerical ID', () => {
+          return request(app)
+            .patch('/api/comments/notAnId')
+            .send({ inc_votes: 20 })
+            .expect(404)
+            .then(({ body: { msg } }) => {
+              expect(msg).toEqual('Comment not found');
+            });
+        });
+      });
+      describe('DELETE', () => {
+        it('should respond with 204 and no content returned', () => {
+          return request(app)
+            .delete('/api/comments/3')
+            .expect(204)
+            .then(({ res: { statusMessage } }) => {
+              expect(statusMessage).toEqual('No Content');
+            });
+        });
+        it('article should not be present in table after deletion', () => {
+          return request(app)
+            .delete('/api/comments/3')
+            .then(() => {
+              return request(app)
+                .get('/api/articles/1/comments')
+                .expect(200)
+                .then(({ body: { comments } }) => {
+                  expect(comments.length).toEqual(12);
+                });
+            });
+        });
+        it('should respond with status 404 and article not found if article_id is not found', () => {
+          return request(app)
+            .delete('/api/comments/999')
+            .expect(404)
+            .then(({ body: { msg } }) => {
+              expect(msg).toBe('Comment not found');
+            });
+        });
+        it('should respond with status 404 and Invalid Article ID when passed a non-numerical ID', () => {
+          return request(app)
+            .delete('/api/comments/notAnId')
+            .expect(404)
+            .then(({ body: { msg } }) => {
+              expect(msg).toEqual('Comment not found');
+            });
         });
       });
     });
