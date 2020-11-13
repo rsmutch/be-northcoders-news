@@ -88,6 +88,18 @@ exports.removeArticleById = (articleId) => {
     });
 };
 
-// exports.fetchArticles = () => {
-//   return connection.select('*').from('articles');
-// };
+exports.createArticle = (newArticle) => {
+  const { title, body, topic, author } = newArticle;
+  return connection
+    .insert({
+      title: title,
+      body: body,
+      topic: topic,
+      author: author,
+    })
+    .into('articles')
+    .returning('*')
+    .then((addedArticle) => {
+      return this.fetchArticles(addedArticle[0].article_id);
+    });
+};

@@ -7,9 +7,12 @@ exports.handleCustomErrors = (err, req, res, next) => {
 };
 
 exports.handlePSQLErrors = (err, req, res, next) => {
-  const errorCodes = ['22P02'];
-  if (errorCodes.includes(err.code)) {
-    res.status(404).send({ msg: 'Article not found' });
+  const notFound = ['22P02'];
+  const requiredIsNull = ['23502'];
+  if (notFound.includes(err.code)) {
+    res.status(404).send({ msg: `${err.detail} not found` });
+  } else if (requiredIsNull.includes(err.code)) {
+    res.status(400).send({ msg: 'Bad Request' });
   } else {
     next(err);
   }
@@ -25,5 +28,5 @@ exports.send404 = (req, res, next) => {
 };
 
 exports.invalidMethodError = (req, res, next) => {
-  // res.status(405).send({ msg: 'Method not allowed' });
+  res.status(405).send({ msg: 'Method not allowed' });
 };

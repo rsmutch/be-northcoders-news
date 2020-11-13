@@ -3,6 +3,7 @@ const {
   patchArticleVotes,
   deleteArticleById,
   getArticles,
+  postArticle,
 } = require('../controllers/articles');
 const {
   getCommentsByArticleId,
@@ -10,7 +11,7 @@ const {
 } = require('../controllers/comments');
 const { invalidMethodError } = require('../controllers/errors');
 
-articlesRouter.route('/').get(getArticles);
+articlesRouter.route('/').get(getArticles).post(postArticle);
 
 articlesRouter
   .route('/:article_id/comments')

@@ -1,7 +1,6 @@
 const app = require('../app');
 const request = require('supertest');
 const connection = require('../db/connection');
-const { response } = require('express');
 
 describe('Endpoints', () => {
   afterAll(() => {
@@ -173,6 +172,44 @@ describe('Endpoints', () => {
               expect(articles).toBeSortedBy('created_at', {
                 descending: true,
               });
+            });
+        });
+      });
+      describe('POST', () => {
+        it('should respond with 201 and the newly added object', () => {
+          return request(app)
+            .post('/api/articles/')
+            .send({
+              title: 'Article Title',
+              body: 'Article body...',
+              topic: 'paper',
+              author: 'rogersop',
+            })
+            .expect(201)
+            .then(({ body: { article } }) => {
+              expect(article[0]).toMatchObject({
+                article_id: expect.any(Number),
+                author: 'rogersop',
+                title: 'Article Title',
+                body: 'Article body...',
+                topic: 'paper',
+                created_at: expect.any(String),
+                comment_count: expect.any(String),
+                votes: expect.any(Number),
+              });
+            });
+        });
+        it('should respond with 400 Bad Request if an item is omitted', () => {
+          return request(app)
+            .post('/api/articles/')
+            .send({
+              title: 'No body',
+              topic: 'paper',
+              author: 'rogersop',
+            })
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).toEqual('Bad Request');
             });
         });
       });
@@ -364,102 +401,182 @@ describe('Endpoints', () => {
         });
       });
       describe('/comments', () => {
-        describe('GET', () => {
-          it('should respond with 200 and an array of comment objects', () => {
-            return request(app)
-              .get('/api/articles/5/comments')
-              .expect(200)
-              .then((response) => {
-                expect(response.body.comments.length).toBe(2);
-                expect(response.body.comments[0]).toMatchObject({
-                  comment_id: 14,
-                  votes: expect.any(Number),
-                  created_at: expect.any(String),
-                  author: expect.any(String),
-                  body: expect.any(String),
+        describe('/', () => {
+          describe('GET', () => {
+            it('should respond with 200 and an array of comment objects', () => {
+              return request(app)
+                .get('/api/articles/5/comments')
+                .expect(200)
+                .then((response) => {
+                  expect(response.body.comments.length).toBe(2);
+                  expect(response.body.comments[0]).toMatchObject({
+                    comment_id: 14,
+                    votes: expect.any(Number),
+                    created_at: expect.any(String),
+                    author: expect.any(String),
+                    body: expect.any(String),
+                  });
+                  expect(response.body.comments[1]).toMatchObject({
+                    comment_id: 15,
+                    votes: expect.any(Number),
+                    created_at: expect.any(String),
+                    author: expect.any(String),
+                    body: expect.any(String),
+                  });
                 });
-                expect(response.body.comments[1]).toMatchObject({
-                  comment_id: 15,
-                  votes: expect.any(Number),
-                  created_at: expect.any(String),
-                  author: expect.any(String),
-                  body: expect.any(String),
+            });
+            it('accepts query sort_by (defaults to created_at)', () => {
+              return request(app)
+                .get('/api/articles/5/comments')
+                .expect(200)
+                .then((response) => {
+                  expect(response.body.comments).toBeSortedBy('created_at', {
+                    descending: true,
+                  });
+                })
+                .then(() => {
+                  return request(app)
+                    .get('/api/articles/5/comments?sort_by=comment_id')
+                    .expect(200)
+                    .then((response) => {
+                      expect(response.body.comments).toBeSortedBy(
+                        'comment_id',
+                        {
+                          descending: true,
+                        }
+                      );
+                    });
+                })
+                .then(() => {
+                  return request(app)
+                    .get('/api/articles/5/comments?sort_by=author')
+                    .expect(200)
+                    .then((response) => {
+                      expect(response.body.comments).toBeSortedBy('author', {
+                        descending: true,
+                      });
+                    });
                 });
-              });
+            });
+            it('accepts query order (defaults to descending)', () => {
+              return request(app)
+                .get('/api/articles/5/comments')
+                .expect(200)
+                .then((response) => {
+                  expect(response.body.comments).toBeSortedBy('created_at', {
+                    descending: true,
+                  });
+                })
+                .then(() => {
+                  return request(app)
+                    .get('/api/articles/5/comments?order=asc')
+                    .expect(200)
+                    .then((response) => {
+                      expect(response.body.comments).toBeSortedBy(
+                        'created_at',
+                        {
+                          descending: false,
+                        }
+                      );
+                    });
+                })
+                .then(() => {
+                  return request(app)
+                    .get('/api/articles/1/comments?sort_by=author&order=asc')
+                    .expect(200)
+                    .then((response) => {
+                      expect(response.body.comments).toBeSortedBy('author', {
+                        descending: false,
+                      });
+                    });
+                });
+            });
           });
-          it('accepts query sort_by (defaults to created_at)', () => {
-            return request(app)
-              .get('/api/articles/5/comments')
-              .expect(200)
-              .then((response) => {
-                expect(response.body.comments).toBeSortedBy('created_at', {
-                  descending: true,
+          describe('POST', () => {
+            it('should respond with 201 and the newly added object', () => {
+              return request(app)
+                .post('/api/articles/5/comments')
+                .send({
+                  username: 'rogersop',
+                  body: 'Beautifully written!',
+                })
+                .expect(201)
+                .then((response) => {
+                  expect(response.body.comment[0]).toEqual({
+                    article_id: 5,
+                    author: 'rogersop',
+                    body: 'Beautifully written!',
+                    comment_id: expect.any(Number),
+                    votes: expect.any(Number),
+                    created_at: expect.any(String),
+                  });
                 });
-              })
-              .then(() => {
-                return request(app)
-                  .get('/api/articles/5/comments?sort_by=comment_id')
-                  .expect(200)
-                  .then((response) => {
-                    expect(response.body.comments).toBeSortedBy('comment_id', {
-                      descending: true,
-                    });
-                  });
-              })
-              .then(() => {
-                return request(app)
-                  .get('/api/articles/5/comments?sort_by=author')
-                  .expect(200)
-                  .then((response) => {
-                    expect(response.body.comments).toBeSortedBy('author', {
-                      descending: true,
-                    });
-                  });
-              });
-          });
-          it('accepts query order (defaults to descending)', () => {
-            return request(app)
-              .get('/api/articles/5/comments')
-              .expect(200)
-              .then((response) => {
-                expect(response.body.comments).toBeSortedBy('created_at', {
-                  descending: true,
-                });
-              })
-              .then(() => {
-                return request(app)
-                  .get('/api/articles/5/comments?order=asc')
-                  .expect(200)
-                  .then((response) => {
-                    expect(response.body.comments).toBeSortedBy('created_at', {
-                      descending: false,
-                    });
-                  });
-              })
-              .then(() => {
-                return request(app)
-                  .get('/api/articles/1/comments?sort_by=author&order=asc')
-                  .expect(200)
-                  .then((response) => {
-                    expect(response.body.comments).toBeSortedBy('author', {
-                      descending: false,
-                    });
-                  });
-              });
+            });
           });
         });
-        describe('POST', () => {
-          it('should respond with 201 and the newly added object', () => {
-            return request(app)
-              .post('/api/articles/5/comments')
-              .send({
-                username: 'rogersop',
-                body: 'Beautifully written!',
-              })
-              .expect(201)
-              .then((response) => {
-                expect(response.body.comment).toMatchObject({});
-              });
+        describe('/:comment_id', () => {
+          describe('PATCH', () => {
+            it('should respond with 200 and updated article', () => {
+              return request(app)
+                .patch('/api/comments/3')
+                .send({ inc_votes: 50 })
+                .expect(200)
+                .then(({ body: { comment } }) => {
+                  expect(comment[0]).toEqual({
+                    comment_id: 3,
+                    body: expect.any(String),
+                    votes: 150,
+                    article_id: 1,
+                    author: 'icellusedkars',
+                    created_at: expect.any(String),
+                  });
+                });
+            });
+            it('should respond with status 400 and Bad Request when not passed an object containing inc_votes', () => {
+              return request(app)
+                .patch('/api/comments/3')
+                .send({})
+                .expect(400)
+                .then(({ body: { msg } }) => {
+                  expect(msg).toEqual('Bad Request');
+                });
+            });
+            it('should respond with status 400 and Bad Request when passed containing anything else other than inc_votes', () => {
+              return request(app)
+                .patch('/api/comments/6')
+                .send({ inc_votes: 10, name: 'Dog' })
+                .expect(400)
+                .then(({ body: { msg } }) => {
+                  expect(msg).toEqual('Bad Request');
+                });
+            });
+            it('should respond with status 400 and Bad Request when inc_votes is not numerical', () => {
+              return request(app)
+                .patch('/api/comments/6')
+                .send({ inc_votes: 'two' })
+                .expect(400)
+                .then(({ body: { msg } }) => {
+                  expect(msg).toEqual('Bad Request');
+                });
+            });
+            it('should respond with status 404 and article not found if article_id is not found', () => {
+              return request(app)
+                .patch('/api/comments/999')
+                .send({ inc_votes: 20 })
+                .expect(404)
+                .then(({ body: { msg } }) => {
+                  expect(msg).toBe('Comment not found');
+                });
+            });
+            it('should respond with status 404 and Invalid Article ID when passed a non-numerical ID', () => {
+              return request(app)
+                .patch('/api/comments/notAnId')
+                .send({ inc_votes: 20 })
+                .expect(404)
+                .then(({ body: { msg } }) => {
+                  expect(msg).toEqual('Comment not found');
+                });
+            });
           });
         });
       });

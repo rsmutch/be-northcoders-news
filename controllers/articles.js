@@ -3,6 +3,7 @@ const {
   updateArticleVotes,
   removeArticleById,
   fetchArticles,
+  createArticle,
 } = require('../models/articles');
 
 // CONTROLLER
@@ -15,7 +16,10 @@ exports.getArticles = (req, res, next) => {
     .then((articles) => {
       res.status(200).send({ articles });
     })
-    .catch(next);
+    .catch((err) => {
+      err.detail = 'Article';
+      next(err);
+    });
 };
 
 exports.patchArticleVotes = (req, res, next) => {
@@ -25,7 +29,10 @@ exports.patchArticleVotes = (req, res, next) => {
     .then((article) => {
       res.status(200).send({ article });
     })
-    .catch(next);
+    .catch((err) => {
+      err.detail = 'Article';
+      next(err);
+    });
 };
 
 exports.deleteArticleById = (req, res, next) => {
@@ -33,6 +40,18 @@ exports.deleteArticleById = (req, res, next) => {
   removeArticleById(articleId)
     .then((response) => {
       res.status(204).send();
+    })
+    .catch((err) => {
+      err.detail = 'Article';
+      next(err);
+    });
+};
+
+exports.postArticle = (req, res, next) => {
+  const { body } = req;
+  createArticle(body)
+    .then((article) => {
+      res.status(201).send({ article });
     })
     .catch(next);
 };
