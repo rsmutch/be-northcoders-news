@@ -43,19 +43,19 @@ describe('Endpoints', () => {
             expect(topics[0]).toEqual(
               expect.objectContaining({
                 slug: expect.any(String),
-                description: expect.any(String),
+                description: expect.any(String)
               })
             );
             expect(topics[1]).toEqual(
               expect.objectContaining({
                 slug: expect.any(String),
-                description: expect.any(String),
+                description: expect.any(String)
               })
             );
             expect(topics[2]).toEqual(
               expect.objectContaining({
                 slug: expect.any(String),
-                description: expect.any(String),
+                description: expect.any(String)
               })
             );
           });
@@ -67,13 +67,13 @@ describe('Endpoints', () => {
           .post('/api/topics/')
           .send({
             slug: 'New Slug',
-            description: 'New Description',
+            description: 'New Description'
           })
           .expect(201)
           .then(({ body: { topic } }) => {
             expect(topic).toEqual({
               slug: 'New Slug',
-              description: 'New Description',
+              description: 'New Description'
             });
           });
       });
@@ -81,7 +81,7 @@ describe('Endpoints', () => {
         return request(app)
           .post('/api/topics/')
           .send({
-            description: 'New Description',
+            description: 'New Description'
           })
           .expect(400)
           .then(({ body: { msg } }) => {
@@ -98,14 +98,14 @@ describe('Endpoints', () => {
           .send({
             username: 'Newusername',
             avatar_url: 'www.google.co.uk',
-            name: 'New Name',
+            name: 'New Name'
           })
           .expect(201)
           .then(({ body: { user } }) => {
             expect(user).toEqual({
               username: 'Newusername',
               avatar_url: 'www.google.co.uk',
-              name: 'New Name',
+              name: 'New Name'
             });
           });
       });
@@ -114,7 +114,7 @@ describe('Endpoints', () => {
           .post('/api/users/')
           .send({
             avatar_url: 'www.google.co.uk',
-            name: 'New Name',
+            name: 'New Name'
           })
           .expect(400)
           .then(({ body: { msg } }) => {
@@ -131,7 +131,7 @@ describe('Endpoints', () => {
             users.forEach((user) => {
               expect(user).toMatchObject(
                 expect.objectContaining({
-                  username: expect.any(String),
+                  username: expect.any(String)
                 })
               );
             });
@@ -143,7 +143,7 @@ describe('Endpoints', () => {
           .expect(200)
           .then(({ body: { users } }) => {
             expect(users).toBeSortedBy('username', {
-              descending: true,
+              descending: true
             });
           });
       });
@@ -153,7 +153,7 @@ describe('Endpoints', () => {
           .expect(200)
           .then(({ body: { users } }) => {
             expect(users).toBeSortedBy('avatar_url', {
-              descending: true,
+              descending: true
             });
           })
           .then(() => {
@@ -162,7 +162,7 @@ describe('Endpoints', () => {
               .expect(200)
               .then(({ body: { users } }) => {
                 expect(users).toBeSortedBy('name', {
-                  descending: true,
+                  descending: true
                 });
               });
           });
@@ -173,7 +173,7 @@ describe('Endpoints', () => {
           .expect(200)
           .then(({ body: { users } }) => {
             expect(users).toBeSortedBy('username', {
-              descending: false,
+              descending: false
             });
           })
           .then(() => {
@@ -182,7 +182,7 @@ describe('Endpoints', () => {
               .expect(200)
               .then(({ body: { users } }) => {
                 expect(users).toBeSortedBy('name', {
-                  descending: false,
+                  descending: false
                 });
               });
           });
@@ -193,7 +193,7 @@ describe('Endpoints', () => {
           .expect(200)
           .then(({ body: { users } }) => {
             expect(users).toBeSortedBy('username', {
-              descending: true,
+              descending: true
             });
           });
       });
@@ -203,7 +203,7 @@ describe('Endpoints', () => {
           .expect(200)
           .then(({ body: { users } }) => {
             expect(users).toBeSortedBy('username', {
-              descending: true,
+              descending: true
             });
           });
       });
@@ -220,8 +220,8 @@ describe('Endpoints', () => {
                   username: 'lurker',
                   avatar_url:
                     'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
-                  name: 'do_nothing',
-                },
+                  name: 'do_nothing'
+                }
               });
             });
         });
@@ -253,7 +253,7 @@ describe('Endpoints', () => {
                     votes: expect.any(Number),
                     topic: expect.any(String),
                     author: expect.any(String),
-                    created_at: expect.any(String),
+                    created_at: expect.any(String)
                   })
                 );
               });
@@ -265,7 +265,7 @@ describe('Endpoints', () => {
             .expect(200)
             .then(({ body: { articles } }) => {
               expect(articles).toBeSortedBy('created_at', {
-                descending: true,
+                descending: true
               });
             });
         });
@@ -275,7 +275,7 @@ describe('Endpoints', () => {
             .expect(200)
             .then(({ body: { articles } }) => {
               expect(articles).toBeSortedBy('topic', {
-                descending: true,
+                descending: true
               });
             })
             .then(() => {
@@ -284,7 +284,7 @@ describe('Endpoints', () => {
                 .expect(200)
                 .then(({ body: { articles } }) => {
                   expect(articles).toBeSortedBy('author', {
-                    descending: true,
+                    descending: true
                   });
                 });
             });
@@ -295,7 +295,7 @@ describe('Endpoints', () => {
             .expect(200)
             .then(({ body: { articles } }) => {
               expect(articles).toBeSortedBy('created_at', {
-                descending: false,
+                descending: false
               });
             })
             .then(() => {
@@ -304,7 +304,47 @@ describe('Endpoints', () => {
                 .expect(200)
                 .then(({ body: { articles } }) => {
                   expect(articles).toBeSortedBy('author', {
-                    descending: false,
+                    descending: false
+                  });
+                });
+            });
+        });
+        it('accepts topic query', () => {
+          return request(app)
+            .get('/api/articles?topic=cats')
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              articles.forEach((article) => {
+                expect(article.topic).toEqual('cats');
+              });
+            })
+            .then(() => {
+              return request(app)
+                .get('/api/articles?topic=mitch')
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                  articles.forEach((article) => {
+                    expect(article.topic).toEqual('mitch');
+                  });
+                });
+            });
+        });
+        it('accepts author query', () => {
+          return request(app)
+            .get('/api/articles?author=butter_bridge')
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              articles.forEach((article) => {
+                expect(article.author).toEqual('butter_bridge');
+              });
+            })
+            .then(() => {
+              return request(app)
+                .get('/api/articles?author=icellusedkars')
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                  articles.forEach((article) => {
+                    expect(article.author).toEqual('icellusedkars');
                   });
                 });
             });
@@ -315,7 +355,7 @@ describe('Endpoints', () => {
             .expect(200)
             .then(({ body: { articles } }) => {
               expect(articles).toBeSortedBy('created_at', {
-                descending: true,
+                descending: true
               });
             });
         });
@@ -325,7 +365,7 @@ describe('Endpoints', () => {
             .expect(200)
             .then(({ body: { articles } }) => {
               expect(articles).toBeSortedBy('created_at', {
-                descending: true,
+                descending: true
               });
             });
         });
@@ -338,7 +378,7 @@ describe('Endpoints', () => {
               title: 'Article Title',
               body: 'Article body...',
               topic: 'paper',
-              author: 'rogersop',
+              author: 'rogersop'
             })
             .expect(201)
             .then(({ body: { article } }) => {
@@ -350,7 +390,7 @@ describe('Endpoints', () => {
                 topic: 'paper',
                 created_at: expect.any(String),
                 comment_count: expect.any(String),
-                votes: expect.any(Number),
+                votes: expect.any(Number)
               });
             });
         });
@@ -360,7 +400,7 @@ describe('Endpoints', () => {
             .send({
               title: 'No body',
               topic: 'paper',
-              author: 'rogersop',
+              author: 'rogersop'
             })
             .expect(400)
             .then(({ body: { msg } }) => {
@@ -384,7 +424,7 @@ describe('Endpoints', () => {
                 topic: expect.any(String),
                 created_at: expect.any(String),
                 votes: expect.any(Number),
-                comment_count: '2',
+                comment_count: '2'
               });
             })
             .then(() => {
@@ -400,7 +440,7 @@ describe('Endpoints', () => {
                     topic: expect.any(String),
                     created_at: expect.any(String),
                     votes: expect.any(Number),
-                    comment_count: '0',
+                    comment_count: '0'
                   });
                 });
             });
@@ -436,7 +476,7 @@ describe('Endpoints', () => {
                 votes: 64,
                 topic: 'mitch',
                 author: 'icellusedkars',
-                created_at: expect.any(String),
+                created_at: expect.any(String)
               });
             })
             .then(() => {
@@ -452,7 +492,7 @@ describe('Endpoints', () => {
                     votes: 4,
                     topic: 'mitch',
                     author: 'icellusedkars',
-                    created_at: expect.any(String),
+                    created_at: expect.any(String)
                   });
                 });
             });
@@ -518,7 +558,7 @@ describe('Endpoints', () => {
             .expect(200)
             .then((response) => {
               expect(response.body).toEqual({
-                articles: expect.any(Object),
+                articles: expect.any(Object)
               });
             })
             .then(() => {
@@ -569,14 +609,14 @@ describe('Endpoints', () => {
                     votes: expect.any(Number),
                     created_at: expect.any(String),
                     author: expect.any(String),
-                    body: expect.any(String),
+                    body: expect.any(String)
                   });
                   expect(response.body.comments[1]).toEqual({
                     comment_id: 15,
                     votes: expect.any(Number),
                     created_at: expect.any(String),
                     author: expect.any(String),
-                    body: expect.any(String),
+                    body: expect.any(String)
                   });
                 });
             });
@@ -586,7 +626,7 @@ describe('Endpoints', () => {
                 .expect(200)
                 .then((response) => {
                   expect(response.body.comments).toBeSortedBy('created_at', {
-                    descending: true,
+                    descending: true
                   });
                 })
                 .then(() => {
@@ -597,7 +637,7 @@ describe('Endpoints', () => {
                       expect(response.body.comments).toBeSortedBy(
                         'comment_id',
                         {
-                          descending: true,
+                          descending: true
                         }
                       );
                     });
@@ -608,7 +648,7 @@ describe('Endpoints', () => {
                     .expect(200)
                     .then((response) => {
                       expect(response.body.comments).toBeSortedBy('author', {
-                        descending: true,
+                        descending: true
                       });
                     });
                 });
@@ -619,7 +659,7 @@ describe('Endpoints', () => {
                 .expect(200)
                 .then((response) => {
                   expect(response.body.comments).toBeSortedBy('created_at', {
-                    descending: true,
+                    descending: true
                   });
                 })
                 .then(() => {
@@ -630,7 +670,7 @@ describe('Endpoints', () => {
                       expect(response.body.comments).toBeSortedBy(
                         'created_at',
                         {
-                          descending: false,
+                          descending: false
                         }
                       );
                     });
@@ -641,7 +681,7 @@ describe('Endpoints', () => {
                     .expect(200)
                     .then((response) => {
                       expect(response.body.comments).toBeSortedBy('author', {
-                        descending: false,
+                        descending: false
                       });
                     });
                 });
@@ -653,7 +693,7 @@ describe('Endpoints', () => {
                 .post('/api/articles/5/comments')
                 .send({
                   username: 'rogersop',
-                  body: 'Beautifully written!',
+                  body: 'Beautifully written!'
                 })
                 .expect(201)
                 .then((response) => {
@@ -663,7 +703,7 @@ describe('Endpoints', () => {
                     body: 'Beautifully written!',
                     comment_id: expect.any(Number),
                     votes: expect.any(Number),
-                    created_at: expect.any(String),
+                    created_at: expect.any(String)
                   });
                 });
             });
@@ -671,7 +711,7 @@ describe('Endpoints', () => {
               return request(app)
                 .post('/api/articles/5/comments')
                 .send({
-                  username: 'rogersop',
+                  username: 'rogersop'
                 })
                 .expect(400)
                 .then(({ body: { msg } }) => {
@@ -716,7 +756,7 @@ describe('Endpoints', () => {
                 votes: 150,
                 article_id: 1,
                 author: 'icellusedkars',
-                created_at: expect.any(String),
+                created_at: expect.any(String)
               });
             });
         });

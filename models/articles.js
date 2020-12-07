@@ -2,7 +2,7 @@ const connection = require('../db/connection');
 
 // MODEL
 
-exports.fetchArticles = (articleId, sortBy, order) => {
+exports.fetchArticles = (articleId, sortBy, order, topic, author) => {
   if (sortBy === 'body') sortBy = 'article.body';
   if (order !== 'desc' && order !== 'asc') order = 'desc';
   const articlesColumns = [
@@ -11,7 +11,7 @@ exports.fetchArticles = (articleId, sortBy, order) => {
     'votes',
     'topic',
     'author',
-    'created_at',
+    'created_at'
   ];
   const articleByIdColumns = ['article.body'];
   return connection
@@ -45,14 +45,20 @@ exports.fetchArticles = (articleId, sortBy, order) => {
           query.orderBy(sortBy, order);
         }
       }
+      if (topic && !articleId) {
+        query.where('topic', topic);
+      }
+      if (author && !articleId) {
+        query.where('articles.author', author);
+      }
     })
     .then((articleData) => {
       if (articleData.length === 0) {
         return Promise.reject({ status: 404, msg: 'Article not found' });
-      } else if (articleData.length > 1) {
-        return articleData;
+      } else if (articleData[0].body) {
+        return articleData[0];
       }
-      return articleData[0];
+      return articleData;
     });
 };
 
@@ -97,7 +103,7 @@ exports.createArticle = (newArticle) => {
       title: title,
       body: body,
       topic: topic,
-      author: author,
+      author: author
     })
     .into('articles')
     .returning('*')

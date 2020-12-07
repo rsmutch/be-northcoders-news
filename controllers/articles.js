@@ -3,7 +3,7 @@ const {
   updateArticleVotes,
   removeArticleById,
   fetchArticles,
-  createArticle,
+  createArticle
 } = require('../models/articles');
 
 // CONTROLLER
@@ -11,8 +11,9 @@ const {
 exports.getArticles = (req, res, next) => {
   const articleId = req.params.article_id;
   const sortBy = req.query.sort_by;
-  const { order } = req.query;
-  fetchArticles(articleId, sortBy, order)
+  const { order, topic, author } = req.query;
+
+  fetchArticles(articleId, sortBy, order, topic, author)
     .then((articles) => {
       res.status(200).send({ articles });
     })
