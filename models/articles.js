@@ -11,7 +11,8 @@ exports.fetchArticles = (articleId, sortBy, order, topic, author) => {
     'votes',
     'topic',
     'author',
-    'created_at'
+    'created_at',
+    'comment_count'
   ];
   const articleByIdColumns = ['article.body'];
   return connection
