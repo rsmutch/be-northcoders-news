@@ -453,12 +453,12 @@ describe('Endpoints', () => {
               expect(response.body.msg).toEqual('Article not found');
             });
         });
-        it('should respond with status 404 and Invalid Article ID when passed a non-numerical ID', () => {
+        it('should respond with status 400 and Invalid Article ID when passed a non-numerical ID', () => {
           return request(app)
             .get('/api/articles/notAnId')
-            .expect(404)
+            .expect(400)
             .then((response) => {
-              expect(response.body.msg).toEqual('Article not found');
+              expect(response.body.msg).toEqual('Invalid Article ID');
             });
         });
       });
@@ -533,13 +533,13 @@ describe('Endpoints', () => {
               expect(response.body.msg).toBe('Article not found');
             });
         });
-        it('should respond with status 404 and Invalid Article ID when passed a non-numerical ID', () => {
+        it('should respond with status 400 and Invalid Article ID when passed a non-numerical ID', () => {
           return request(app)
             .patch('/api/articles/notAnId')
             .send({ inc_votes: 20 })
-            .expect(404)
+            .expect(400)
             .then((response) => {
-              expect(response.body.msg).toEqual('Article not found');
+              expect(response.body.msg).toEqual('Invalid Article ID');
             });
         });
       });
@@ -586,12 +586,12 @@ describe('Endpoints', () => {
               expect(response.body.msg).toBe('Article not found');
             });
         });
-        it('should respond with status 404 and Invalid Article ID when passed a non-numerical ID', () => {
+        it('should respond with status 400 and Invalid Article ID when passed a non-numerical ID', () => {
           return request(app)
             .delete('/api/articles/notAnId')
-            .expect(404)
+            .expect(400)
             .then((response) => {
-              expect(response.body.msg).toEqual('Article not found');
+              expect(response.body.msg).toEqual('Invalid Article ID');
             });
         });
       });
@@ -727,13 +727,13 @@ describe('Endpoints', () => {
                   expect(msg).toBe('Article not found');
                 });
             });
-            it('should respond with status 404 and Invalid Article ID when passed a non-numerical article ID', () => {
+            it('should respond with status 400 and Invalid Article ID when passed a non-numerical article ID', () => {
               return request(app)
                 .post('/api/articles/notAnId/comments')
                 .send({ username: 'rogersop', body: 'Comment Body' })
-                .expect(404)
+                .expect(400)
                 .then(({ body: { msg } }) => {
-                  expect(msg).toEqual('Article not found');
+                  expect(msg).toEqual('Invalid Article ID');
                 });
             });
           });
@@ -796,13 +796,13 @@ describe('Endpoints', () => {
               expect(msg).toBe('Comment not found');
             });
         });
-        it('should respond with status 404 and Invalid Article ID when passed a non-numerical ID', () => {
+        it('should respond with status 400 and Invalid Comment ID when passed a non-numerical ID', () => {
           return request(app)
             .patch('/api/comments/notAnId')
             .send({ inc_votes: 20 })
-            .expect(404)
+            .expect(400)
             .then(({ body: { msg } }) => {
-              expect(msg).toEqual('Comment not found');
+              expect(msg).toEqual('Invalid Comment ID');
             });
         });
       });
@@ -835,12 +835,12 @@ describe('Endpoints', () => {
               expect(msg).toBe('Comment not found');
             });
         });
-        it('should respond with status 404 and Invalid Article ID when passed a non-numerical ID', () => {
+        it('should respond with status 400 and Invalid Article ID when passed a non-numerical ID', () => {
           return request(app)
             .delete('/api/comments/notAnId')
-            .expect(404)
+            .expect(400)
             .then(({ body: { msg } }) => {
-              expect(msg).toEqual('Comment not found');
+              expect(msg).toEqual('Invalid Comment ID');
             });
         });
       });

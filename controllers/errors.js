@@ -7,12 +7,15 @@ exports.handleCustomErrors = (err, req, res, next) => {
 };
 
 exports.handlePSQLErrors = (err, req, res, next) => {
-  const notFound = ['22P02', '23503'];
+  const notFound = ['23503'];
   const requiredIsNull = ['23502'];
+  const invalidID = ['22P02'];
   if (notFound.includes(err.code)) {
     res.status(404).send({ msg: `${err.detail} not found` });
   } else if (requiredIsNull.includes(err.code)) {
     res.status(400).send({ msg: 'Bad Request' });
+  } else if (invalidID.includes(err.code)) {
+    res.status(400).send({ msg: `Invalid ${err.detail} ID` });
   } else {
     next(err);
   }
