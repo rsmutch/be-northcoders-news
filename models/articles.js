@@ -5,6 +5,7 @@ const connection = require('../db/connection');
 exports.fetchArticles = (articleId, sortBy, order, topic, author) => {
   if (sortBy === 'body') sortBy = 'article.body';
   if (order !== 'desc' && order !== 'asc') order = 'desc';
+  const error = topic ? 'Topic' : author ? 'Author' : 'Article';
   const articlesColumns = [
     'article_id',
     'title',
@@ -55,7 +56,7 @@ exports.fetchArticles = (articleId, sortBy, order, topic, author) => {
     })
     .then((articleData) => {
       if (articleData.length === 0) {
-        return Promise.reject({ status: 404, msg: 'Article not found' });
+        return Promise.reject({ status: 404, msg: `${error} not found` });
       } else if (articleData[0].body) {
         return articleData[0];
       }

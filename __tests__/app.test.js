@@ -349,6 +349,22 @@ describe('Endpoints', () => {
                 });
             });
         });
+        it('if topic or author are not valid, will respond with 404 and topic/article not found', () => {
+          return request(app)
+            .get('/api/articles?topic=notATopic')
+            .expect(404)
+            .then(({ body: { msg } }) => {
+              expect(msg).toEqual('Topic not found');
+            })
+            .then(() => {
+              return request(app)
+                .get('/api/articles?author=me')
+                .expect(404)
+                .then(({ body: { msg } }) => {
+                  expect(msg).toEqual('Author not found');
+                });
+            });
+        });
         it('if sort_by is provided an invalid column, will default to created_at', () => {
           return request(app)
             .get('/api/articles?sort_by=body')
