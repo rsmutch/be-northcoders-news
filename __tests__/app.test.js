@@ -21,18 +21,6 @@ describe('Endpoints', () => {
         });
     });
   });
-  xdescribe('/api/', () => {
-    xdescribe('GET', () => {
-      it('should return api JSON', () => {
-        return request(app)
-          .get('/api')
-          .expect(200)
-          .then(({ body: { api } }) => {
-            expect(api).toEqual({});
-          });
-      });
-    });
-  });
   describe('/api/topics', () => {
     describe('GET', () => {
       test('should respond with status code 200 and an array of all topics', () => {
