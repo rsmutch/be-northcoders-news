@@ -12,7 +12,7 @@ Back end API project for a news aggregator website with an array of endpoints an
 
 ## Usage
 
-### API URL
+### <ins>API URL</ins>
 
 ```
 https://rsm-nc-news.herokuapp.com/
@@ -84,6 +84,7 @@ POST new comment
 ```
 
 <br>
+
 PATCH or DELETE specific comment
 ```
 /api/comments/:comment_id
