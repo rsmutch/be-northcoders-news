@@ -7,7 +7,7 @@ Back end API project for a news aggregator website with an array of endpoints an
 - Database is built with PSQL
 - Knex SQL query builder
 - Server framework is Express
-- Utility functions created
+- Utility functions created to format data correctly
 - Tested with Jest & Supertest
 
 ## Usage
