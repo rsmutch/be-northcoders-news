@@ -2,6 +2,8 @@
 
 Back end API project for a news aggregator website with an array of endpoints and custom error handling.
 
+This project was created to mimic the back end of a news aggregator website similar to Reddit. The RESTful API features multiple CRUD endpoints allowing interaction with a database of users, topics, articles and comments. The intention of creating this was to later marry the API up with a [front-end project](https://github.com/rsmutch/fe-nc-news), which was completed a couple of weeks afterwards.
+
 ## Tech Used
 
 - Database is built with PSQL
